@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap"
+        rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List Manager</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.css' rel='stylesheet' />
+    <style>
+        button {
+            height: 25px;
+            width: 80px;
+            font-size: 15px;
+            background-color: #131842;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            transition: 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #E68369;
+            color: black;
+        }
+
+        #body {
+            background-image: url(assets/todo-bg.avif);
+            font-family: 'Crimson Text', serif;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 90%;
+            max-width: 1200px;
+            margin-top: 20px;
+        }
+
+        .task-list {
+            width: 30%;
+            min-width: 300px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .calendar {
+            flex-grow: 1;
+            margin: 0 0 80px 50px;
+            max-width: 90%;
+            height: auto;
+            color: black;
+        }
+
+        form {
+            margin-bottom: 20px;
+            background-color: white;
+            padding: 1.5em;
+            border-radius: 1.8em;
+            box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            margin: 5px;
+            width: calc(100% - 25px);
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        ul#taskList {
+            list-style-type: none;
+            padding: 0;
+            font-size: 18px;
+        }
+
+        ul#taskList li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        ul#taskList li button {
+            margin-left: auto;
+            margin-right: 10px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .countdown {
+            margin-left: auto;
+        }
+
+        .completed {
+            text-decoration: line-through;
+        }
+
+        #calendar {
+            max-width: 100%;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body id="body">
+    <nav id="navbar">
+        <ul></ul>
+    </nav>
+    <h1 style="margin: 20px 0;">Welcome to To-Do List Manager</h1>
+    <div class="container">
+        <div class="task-list">
+            <h2>Task List</h2>
+            <form id="taskForm">
+                <input type="text" id="taskInput" placeholder="Enter task" required>
+                <input type="datetime-local" id="dateTimeInput" required><br><br>
+                <button type="submit" id="addTaskButton">Add Task</button>
+            </form>
+            <ul id="taskList"></ul>
+        </div>
+        <div class="calendar">
+            <div id="calendar"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.js"></script>
+    <script type="module" src="todo-list.js"></script>
+</body>
+
+</html>

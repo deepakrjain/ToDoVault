@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap"
+        rel="stylesheet">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: linear-gradient(green, yellow);
+        }
+
+        #signUpForm fieldset {
+            display: none;
+        }
+
+        #signUpForm fieldset:first-of-type {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <ul id="navbar">
+            <li><a href="index.html">To Do List Manager</a></li>
+            <li><a href="sign-up.html">Sign Up</a></li>
+            <li><a href="sign-in.html">Sign In</a></li>
+        </ul>
+    </nav><br><br>
+    <ul id="progressbar">
+        <li class="active">Basic Details</li>
+        <li>Login Credentials</li>
+    </ul>
+    <form id="signUpForm">
+        <fieldset>
+            <h2 class="fs-title">Basic Details</h2>
+            <h3 class="fs-subtitle">This is step 1</h3>
+            <input type="text" id="name" placeholder="Full Name"><span id="name-error"></span><br><br>
+            <input type="number" id="age" placeholder="Age"><span id="age-error"></span><br><br>
+            <input type="number" id="phone" placeholder="Phone No."><span id="phone-error"></span><br><br>
+            <input id="continue" type="button" class="continue action-button" value="Continue">
+        </fieldset>
+        <fieldset>
+            <h2 class="fs-title">Login Credentials</h2>
+            <h3 class="fs-subtitle">This is step 2</h3>
+            <input type="email" id="email" placeholder="Email"><span id="email-error"></span><br><br>
+            <input type="password" id="password" placeholder="Password"><span id="password-error"></span><br><br>
+            <input type="password" id="confirmPassword" placeholder="Confirm Password"><span
+                id="confirmPassword-error"></span><br><br>
+            <input type="button" name="previous" class="previous action-button" value="Previous" />
+            <input id="signUp" class="submit action-button" type="button" value="Sign Up">
+        </fieldset>
+    </form>
+    <script type="module">
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+        import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVVZ_NNzbjpDCFiKIvF4zIiu6c-0t7OBU",
+            authDomain: "to-do-credentials.firebaseapp.com",
+            databaseURL: "https://to-do-credentials-default-rtdb.firebaseio.com",
+            projectId: "to-do-credentials",
+            storageBucket: "to-do-credentials.appspot.com",
+            messagingSenderId: "845811111535",
+            appId: "1:845811111535:web:9b6ac503b51a456339df9a"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const db = getFirestore();
+        
+        document.getElementById("continue").addEventListener("click", function (event) {
+            event.preventDefault();
+            firstValidate();
+        });
+
+        function firstValidate() {
+            var name = document.getElementById("name").value;
+            var age = document.getElementById("age").value;
+            var phone = document.getElementById("phone").value;
+            var valid = true;
+            function fieldEmpty(errorField) {
+                document.getElementById(errorField).innerHTML = "Field can't be empty";
+            }
+            function fieldComplete(errorField) {
+                document.getElementById(errorField).innerHTML = "";
+            }
+            if (name === "") {
+                fieldEmpty("name-error")
+                valid = false;
+            } else {
+                fieldComplete("name-error")
+            }
+
+            if (age === "") {
+                fieldEmpty("age-error")
+                valid = false;
+            } else {
+                fieldComplete("age-error")
+            }
+
+            if (phone.length !== 10) {
+                document.getElementById("phone-error").innerHTML = "Phone number must be 10 digits";
+                valid = false;
+            } else {
+                fieldComplete("phone-error")
+            }
+
+            if (valid) {
+                nextStep();
+            }
+        }
+
+        document.getElementById("signUp").addEventListener("click", function (event) {
+            event.preventDefault();
+            secondValidate();
+        });
+
+        function secondValidate() {
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+            var confirmPassword = document.getElementById("confirmPassword").value;
+
+            var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            var uppercase = /[A-Z]/g;
+            var lowercase = /[a-z]/g;
+            var numbers = /[0-9]/g;
+            var specchar = /[\W_]/g;
+
+            var valid = true;
+
+            if (!email.match(emailPattern)) {
+                document.getElementById("email-error").innerHTML = "Invalid email address";
+                valid = false;
+            } else {
+                document.getElementById("email-error").innerHTML = "";
+            }
+
+            if (!password.match(uppercase) || !password.match(lowercase) || !password.match(numbers) || !password.match(specchar) || password.length < 8) {
+                document.getElementById("password-error").innerHTML = "Password should contain at least one uppercase, lowercase, number, and special character each. Minimum length should be 8 characters.";
+                valid = false;
+            } else {
+                document.getElementById("password-error").innerHTML = "";
+            }
+
+            if (password !== confirmPassword) {
+                document.getElementById("confirmPassword-error").innerHTML = "Passwords don't match";
+                valid = false;
+            } else {
+                document.getElementById("confirmPassword-error").innerHTML = "";
+            }
+
+            if (valid) {
+                register(email, password);
+            }
+        }
+        
+        function nextStep() {
+            var current_fs = document.querySelector("#signUpForm fieldset:not([style='display: none;'])");
+            var next_fs = current_fs.nextElementSibling;
+
+            current_fs.style.display = "none";
+            next_fs.style.display = "block";
+
+            updateProgressBar(1);
+        }
+
+        function previousStep() {
+            var current_fs = document.querySelector("#signUpForm fieldset:not([style='display: none;'])");
+            var previous_fs = current_fs.previousElementSibling;
+
+            current_fs.style.display = "none";
+            previous_fs.style.display = "block";
+
+            updateProgressBar(-1);
+        }
+
+        function updateProgressBar(step) {
+            var current_active = document.querySelector("#progressbar li.active");
+            current_active.classList.remove("active");
+
+            if (step > 0) {
+                current_active.nextElementSibling.classList.add("active");
+            } else {
+                current_active.previousElementSibling.classList.add("active");
+            }
+        }
+
+        document.querySelector(".previous").addEventListener("click", function () {
+            previousStep();
+        });
+
+        function register(email, password) {
+            createUserWithEmailAndPassword(auth, email, password)
+                .then(function (userCredential) {
+                    const user = userCredential.user;
+                    const userData = {
+                        email: email,
+                        password: password,
+                        last_login: Date.now()
+                    };
+                    const docRef = doc(db, "users", user.uid);
+                    setDoc(docRef, userData)
+                        .then(() => {
+                            alert("User Created Successfully!");
+                            // Redirect to the home page after successful registration
+                            window.location.href = 'index.html';
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                })
+                .catch(function (error) {
+                    const errorCode = error.code;
+                    if (errorCode === 'auth/email-already-in-use') {
+                        alert("Email already exists, please sign in.");
+                    } else {
+                        alert("Unable to create user: " + error.message);
+                    }
+                });
+        }
+
+    </script>
+</body>
+
+</html>
